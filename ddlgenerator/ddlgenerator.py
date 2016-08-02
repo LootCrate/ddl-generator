@@ -47,6 +47,7 @@ import sqlalchemy as sa
 from sqlalchemy.schema import CreateTable
 import dateutil.parser
 import yaml
+import random
 try:
     import pymongo
 except ImportError:
@@ -121,7 +122,7 @@ class Table(object):
                  varying_length_text=False, uniques=False,
                  pk_name=None, force_pk=False, data_size_cushion=0,
                  _parent_table=None, _fk_field_name=None, reorder=False,
-                 loglevel=logging.WARN, limit=None):
+                 loglevel=logging.WARN, limit=None, unique_varchar_lengths=False):
         """
         Initialize a Table and load its data.
 
@@ -171,6 +172,9 @@ class Table(object):
 
         self.default_dialect = default_dialect
         self.comments = {}
+        self.unique_varchar_lengths = unique_varchar_lengths
+        self.varchar_lengths = []
+        
         child_metadata_sources = {}
         if metadata_source:
             if isinstance(metadata_source, OrderedDict):
@@ -462,6 +466,9 @@ class Table(object):
                 col['satype'] = sa.Text()
             else:
                 str_len = max(len(col['sample_datum']), col['str_length'])
+                while self.unique_varchar_lengths and str_len in self.varchar_lengths:
+                    str_len += random.randint(2, 7)
+                self.varchar_lengths.append(str_len)
                 col['satype'] = sa.Unicode(str_len+self.data_size_cushion*2)
         else:
             col['satype'] = self.types2sa[type(col['sample_datum'])]

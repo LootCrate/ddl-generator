@@ -103,6 +103,12 @@ class TestFromRawPythonData(unittest.TestCase):
         tbl = Table(self.merovingians, data_size_cushion=1)
         generated = tbl.sql('postgresql').strip()        
         self.assertIn('VARCHAR(14)', generated)
+    
+    def test_unique_columns(self):
+        test = [{'col1':'four', 'col2':'four'}]
+        tbl = Table(test, unique_varchar_lengths=True)
+        generated = tbl.sql('postgresql').strip()
+        self.assertEqual(generated.count('VARCHAR(4)'), 1)
 
 
 class TestFiles(unittest.TestCase):

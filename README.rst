@@ -73,6 +73,9 @@ Options
 			    Use metadata saved in FROM for table definition, do
 			    not re-analyze table structure
       -l LOG, --log LOG     log level (CRITICAL, FATAL, ERROR, DEBUG, INFO, WARN)
+      --unique_varchar_lengths
+          Generate unique lengths for all VARCHAR columns, helpful for 
+          identifying load errors
 
 Generate SQLAlchemy models
 --------------------------
@@ -159,6 +162,3 @@ Credits
 - coldfix and Mark Ransom for their StackOverflow answers
 - Audrey Roy for cookiecutter
 - Brandon Lorenz for Django model generation
-
-
-

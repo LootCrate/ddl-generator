@@ -37,6 +37,8 @@ parser.add_argument('--use-metadata-from', type=str, metavar='FILENAME',
                     help='Use metadata saved in FROM for table definition, do not re-analyze table structure')
 parser.add_argument('-l', '--log', type=str.upper,
                     help='log level (CRITICAL, FATAL, ERROR, DEBUG, INFO, WARN)', default='WARN')
+parser.add_argument('--unique_varchar_lengths', action='store_true',
+                    help='Generate unique lengths for all VARCHAR columns, helpful for identifying load errors')
 
 def set_logging(args):
     try:
@@ -55,7 +57,7 @@ def generate_one(tbl, args, table_name=None, file=None):
     table = Table(tbl, table_name=table_name, varying_length_text=args.text, uniques=args.uniques,
                   pk_name = args.key, force_pk=args.force_key, reorder=args.reorder, data_size_cushion=args.cushion,
                   save_metadata_to=args.save_metadata_to, metadata_source=args.use_metadata_from,
-                  loglevel=args.log, limit=args.limit)
+                  loglevel=args.log, limit=args.limit, unique_varchar_lengths=args.unique_varchar_lengths)
     if args.dialect.startswith('sqla'):
         if not args.no_creates:
             print(table.sqlalchemy(), file=file)
@@ -110,4 +112,3 @@ def generate(args=None, namespace=None, file=None):
                         print(seq_update, file=file)
         else:
             generate_one(datafile, args, file=file)
-
